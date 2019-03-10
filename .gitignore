@@ -4,3 +4,6 @@ key
 key.pub
 encryptKey
 nonce
+cust_key
+cust_key.pub
+last_hash

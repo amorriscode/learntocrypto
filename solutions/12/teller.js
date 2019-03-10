@@ -3,7 +3,7 @@ const net = require('net');
 
 const client = jsonStream(net.connect(3876));
 
-const id = process.argv[2];
+const customerId = process.argv[2];
 // TODO: Fix terrible register hack
 const cmd = process.argv[2] === 'register'
   ? 'register'
@@ -20,4 +20,4 @@ client.on('data', (msg) => {
   console.log('Teller received:', msg);
 });
 
-client.end({ cmd, ...cmdParams[cmd], id });
+client.end({ cmd, ...cmdParams[cmd], customerId });

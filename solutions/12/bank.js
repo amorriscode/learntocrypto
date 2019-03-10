@@ -142,41 +142,41 @@ const writeLedgerEntry = (entry) => {
 };
 
 // Combine all transactions to provide user with balance
-const balanceReducer = (customerId) => ledger.reduce((balance, { value }) => {
-  const { cmd, id, amount } = value;
+const balanceReducer = (currCustomerId) => ledger.reduce((balance, { value }) => {
+  const { cmd, customerId, amount } = value;
 
   const entryHandler = {
     deposit: () => balance + amount,
     withdraw: () => balance - amount,
   };
 
-  return customerId === id && entryHandler.hasOwnProperty(cmd)
+  return currCustomerId === customerId && entryHandler.hasOwnProperty(cmd)
     ? entryHandler[cmd]()
     : balance;
 }, 0);
 
-const balanceHandler = ({ id }) => ({ balance: balanceReducer(id) });
+const balanceHandler = ({ customerId }) => ({ balance: balanceReducer(customerId) });
 
-const depositHandler = ({ id, amount }) => {
-  writeLedgerEntry({ cmd: 'deposit', id, amount: parseInt(amount) });
-  return balanceHandler({ id });
+const depositHandler = ({ customerId, amount }) => {
+  writeLedgerEntry({ cmd: 'deposit', customerId, amount: parseInt(amount) });
+  return balanceHandler({ customerId });
 };
 
 // Allow the user to withdraw money
 // but deny them if insufficient funds
-const withdrawHandler = ({ id, amount }) => {
+const withdrawHandler = ({ customerId, amount }) => {
   const amountToWithdraw = parseInt(amount);
-  const { balance } = balanceHandler({ id });
+  const { balance } = balanceHandler({ customerId });
 
   let err;
   if (balance >= amountToWithdraw) {
-    writeLedgerEntry({ cmd: 'withdraw', id, amount: parseInt(amount) });
+    writeLedgerEntry({ cmd: 'withdraw', customerId, amount: parseInt(amount) });
   } else {
     err = 'Insufficient funds!';
   }
 
   return {
-    ...balanceHandler({ id }),
+    ...balanceHandler({ customerId }),
     err,
   };
 };
@@ -185,11 +185,11 @@ const registerHandler = () => {
   const idBuffer = Buffer.alloc(32);
   sodium.randombytes_buf(idBuffer);
 
-  const id = idBuffer.toString('hex');
+  const customerId = idBuffer.toString('hex');
 
-  writeLedgerEntry({ cmd: 'register', id });
+  writeLedgerEntry({ cmd: 'register', customerId });
 
-  return { id };
+  return { customerId };
 };
 
 const cmdHandler = {

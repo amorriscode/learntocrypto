@@ -7,7 +7,7 @@ const publicKey = Buffer.alloc(sodium.crypto_sign_PUBLICKEYBYTES).fill(process.a
 const verified = sodium.crypto_sign_verify_detached(signature, message, publicKey);
 
 const result = verified
-    ? 'The signature has been verified!'
-    : 'The signature does not match. Something nefarious is going on.';
+  ? 'The signature has been verified!'
+  : 'The signature does not match. Something nefarious is going on.';
 
 console.log(result);

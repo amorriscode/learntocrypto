@@ -1,4 +1,6 @@
 node_modules
-ledger.json
+ledger
 key
 key.pub
+encryptKey
+nonce
